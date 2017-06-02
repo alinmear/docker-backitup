@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  backup:
+    image: alinmear/docker-backitup:testing
+    volumes:
+      - /tmp/backup_src:/backup_root
+      - /tmp/backup:/backup
+    links:
+      - mariadb:mysql
+    environment:
+        MYSQL_USER: root
+        MYSQL_PASS: root
+    cap_add:
+        - SYS_PTRACE
+  mariadb:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
