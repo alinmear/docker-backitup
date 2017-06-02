@@ -16,7 +16,7 @@ version: '2'
 
 services:
   backup:
-    image: alinmear/docker-backup:testing
+    image: alinmear/docker-backup:latest
     volumes:
       - /tmp/backup_src:/backup_root:ro
       - /tmp/backup:/backup
