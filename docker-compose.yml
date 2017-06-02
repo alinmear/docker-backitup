@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  backup:
-    image: alinmear/docker-backitup:testing
+  backitup:
+    image: alinmear/docker-backitup:latest
     volumes:
       - /tmp/backup_src:/backup_root
       - /tmp/backup:/backup
@@ -13,6 +13,7 @@ services:
         MYSQL_PASS: root
     cap_add:
         - SYS_PTRACE
+
   mariadb:
     image: mariadb
     environment:
