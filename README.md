@@ -15,12 +15,13 @@ Features:
 version: '2'
 
 services:
-  backup:
+  backitup:
     image: alinmear/docker-backup:testing
     volumes:
       - /tmp/backup_src:/backup_root:ro
       - /tmp/backup:/backup
       - /tmp/duply_export:/duply_export
+      - gpg_home_volume:/tmp/docker-backitup/gpg_home:ro
     links:
       - mariadb:mysql
     environment:
@@ -34,7 +35,17 @@ services:
       MYSQL_DATABASE: test
 ```
 
-## Export duply profiles 
+## Create gpg_home
+```bash
+# create container for entropy
+docker run --privileged -d --name "gpg_home_entropy" harbur/haveged
+# create gpg keys and export them via duply
+docker run -v "gpg_home_volume:/gpg_home" -v "./duply_export:/duply_export" --rm alinmear/docker-backitup:latest /bin/bash -c "gpg_setup && duply_setup && backitup_export && exit 0 || exit 1"
+# remove entropy container again
+docker stop gpg_home_entropy && docker rm gpg_home_entropy && docker rmi harbur/haveged
+```
+
+## Export duply profiles
 This will export the duply profile folder to the `/duply_export' target.
 
 *NOTE*: Copy this to a save place, because within the duply folder the keys are stored as well as the password within the config file of duply.

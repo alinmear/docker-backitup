@@ -12,6 +12,8 @@ _gpg_agent_conf="${_gpg_folder}/gpg-agent.conf"
 gpg_gen() {
 
     # if key already exists do nothing
+    # should be the case if gpg_home is provided
+    # at /tmp/docker-backitup/gpg_home
     gpg --list-keys | grep "${GPG_GEN_NAME}" 2>/dev/null 1>/dev/null
     [[ $? == 0 ]] && return 0
 
@@ -75,7 +77,7 @@ EOF
 _gpg_get_key_id() {
     echo $(gpg -k | grep "^ " |  sed -e 's/^\s*//' -e '/^$/d')
 }
-    
+
 _gpg_get_shortkey_id() {
     echo $(gpg -k --keyid-format short | grep -E "^sub" | awk '{print $2}' | awk -F'/' '{print $2}')
 }
@@ -89,8 +91,8 @@ gpg_export() {
     [ -f "${_gpg_info}" ] && gpg_show_password
 
     pushd "${_gpg_export}"
-    gpg -a --output gpg-key.asc --armor --export "${_gpg_id}" 
-    gpg -a --output gpg-secret-key.asc --armor --export-secret-keys "${_gpg_id}" 
+    gpg -a --output gpg-key.asc --armor --export "${_gpg_id}"
+    gpg -a --output gpg-secret-key.asc --armor --export-secret-keys "${_gpg_id}"
     popd
 
     [ -f "${_gpg_info}" ] && cp -f "${_gpg_info}" "${_gpg_export}/gpg_info"
@@ -99,8 +101,8 @@ gpg_export() {
 gpg_show_password() {
     _gpg_pass="$(cat "${_gpg_info}" | tail -n 1)" || return 1
 
-    dialog --title "GPG-Password" --infobox "${_gpg_pass}" 3 40 
-    read -p "Copy the Password from above. Press <Key> to continue ..." 
+    dialog --title "GPG-Password" --infobox "${_gpg_pass}" 3 40
+    read -p "Copy the Password from above. Press <Key> to continue ..."
 }
 
 gpg_import() {
@@ -127,7 +129,7 @@ gpg_set_duply_gpg_keys() {
 	local key="GPG_KEY"; local shortkey="GPG_KEY_SIGN"; \
 	sed -i -e "s|^${key}=.*|${key}=${_gpg_id}|g" \
 	       -e "s|^${shortkey}=.*|${shortkey}=${_gpg_id_short}|g" \
-	/root/.duply/${profile}/conf 
+	/root/.duply/${profile}/conf
     done
 
     return 0
@@ -139,8 +141,8 @@ gpg_start_gpg_agent() {
 	rval=$? || rval=1
 
     # need this to get gpg working within docker and alpine
-    [[ $rval != 0 ]] &&	echo allow-loopback-pinentry > "${_gpg_agent_conf}" 
-	
+    [[ $rval != 0 ]] &&	echo allow-loopback-pinentry > "${_gpg_agent_conf}"
+
 
     gnupginf="${_gpg_folder}/gpg-agent-info"
     if pgrep -u "${USER}" gpg-agent >/dev/null 2>&1; then
