@@ -70,7 +70,7 @@ copy_custom_configs() {
   # copy gpg_home if exists
   _folder_gpg_home="${_folder}/gpg_home"
   [ -d "$_folder_gpg_home" ] && \
-  cp -r "${_folder_gpg_home}/*" /gpg_home
+  cp -r "${_folder_gpg_home}/"* /gpg_home
 }
 
 # first copy custom configs then init the default vars
