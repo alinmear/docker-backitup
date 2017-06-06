@@ -1,4 +1,4 @@
-# docker-backup
+# docker-backitup
 A backup solution for containers. It covers data backups via Duplicity (duply) and Mysql/Mariadb Backups via mysqldump. Scheduling is provided via crond.
 
 Features:
